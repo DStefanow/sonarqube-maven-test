@@ -5,7 +5,10 @@ pipeline {
 			steps {
 				git branch: 'main', credentialsId: 'github-test', url: 'git@github.com:DStefanow/sonarqube-maven-test.git'
 
-				echo "Hello World"
+				sh """
+					echo "Test do we have maven on Jenkins instance"
+					mvn --version
+				"""
 			}
 		}
 	}
