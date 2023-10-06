@@ -1,5 +1,5 @@
 // Define SonarQube project properties
-def sonarHostUrl = 'http://172.17.0.3:9000/'
+def sonarHostUrl = 'http://172.17.0.3:9000'
 
 def sonarOptions = [
 	projectName: 'jenkins-maven-test',
@@ -28,18 +28,17 @@ pipeline {
 				git branch: "${params.BRANCH}", credentialsId: 'github-test', url: "git@github.com:DStefanow/${params.REPO}.git"
 
 				script {
-					sonarRunResult = sh(script: "mvn clean verify sonar:sonar \
-						-Dmaven.test.skip=true \
-						-Dsonar.projectKey=${sonarOptions.projectKey} \
-						-Dsonar.projectName='${sonarOptions.projectName}' \
-						-Dsonar.host.url=${sonarHostUrl} \
-						-Dsonar.token=${sonarOptions.sonarToken}", returnStdout: true)
+					sh """
+						mvn clean verify sonar:sonar \
+							-Dmaven.test.skip=true \
+							-Dsonar.projectKey=${sonarOptions.projectKey} \
+							-Dsonar.projectName='${sonarOptions.projectName}' \
+							-Dsonar.host.url=${sonarHostUrl} \
+							-Dsonar.token=${sonarOptions.sonarToken}
+					"""
 
-					sonarProjectRunUrl = (sonarRunResult =~ /More about the report processing at (.*)\n/)[0][1]
-					currentBuild.description = "\n\nSonar run url: ${sonarProjectRunUrl}\n\n"
+					currentBuild.description = "Sonar run url: ${sonarHostUrl}/dashboard?id=${sonarOptions.projectKey}"
 				}
-
-				echo "${sonarRunResult}"
 			}
 		}
 	}
