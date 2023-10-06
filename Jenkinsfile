@@ -8,6 +8,7 @@ def sonarOptions = [
 ]
 
 def sonarRunResult = ''
+def sonarProjectRunUrl = ''
 
 pipeline {
 	agent any
@@ -32,10 +33,13 @@ pipeline {
 						-Dsonar.projectKey=${sonarOptions.projectKey} \
 						-Dsonar.projectName='${sonarOptions.projectName}' \
 						-Dsonar.host.url=${sonarHostUrl} \
-						-Dsonar.token=${sonarOptions.sonarToken} | grep -A4 'ANALYSIS SUCCESSFUL'", returnStdout: true)
+						-Dsonar.token=${sonarOptions.sonarToken}", returnStdout: true)
+
+					sonarProjectRunUrl = (sonarRunResult =~ /More about the report processing at (.*)\n/)[0][1]
+					currentBuild.description = "\n\nSonar run url: ${sonarProjectRunUrl}\n\n"
 				}
 
-				echo "SonarQube run rusult output: ${sonarRunResult}"
+				echo "${sonarRunResult}"
 			}
 		}
 	}
