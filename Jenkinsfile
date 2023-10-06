@@ -9,10 +9,20 @@ def sonarOptions = [
 
 pipeline {
 	agent any
+	parameters {
+		choice(name: 'REPO',
+			choices: [
+				'sonarqube-maven-test'
+			],
+			description: 'Repo for clone'
+		)
+
+		string(name: 'BRANCH', defaultValue: 'main', description: 'Branch for checkout')
+	}
 	stages {
 		stage('Clone locally github project') {
 			steps {
-				git branch: 'main', credentialsId: 'github-test', url: 'git@github.com:DStefanow/sonarqube-maven-test.git'
+				git branch: "${params.BRANCH}", credentialsId: 'github-test', url: "git@github.com:DStefanow/${params.REPO}.git"
 
 				sh """
 					mvn clean verify sonar:sonar \
