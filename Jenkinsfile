@@ -17,10 +17,10 @@ pipeline {
 				sh """
 					mvn clean verify sonar:sonar \
 						-Dmaven.test.skip=true \
-						-Dsonar.projectKey='"${sonarOptions.projectKey}"' \
+						-Dsonar.projectKey="${sonarOptions.projectKey}" \
 						-Dsonar.projectName='"${sonarOptions.projectName}"' \
-						-Dsonar.host.url='"${sonarHostUrl}"' \
-						-Dsonar.token='"${sonarOptions.sonarToken}"'
+						-Dsonar.host.url=${sonarHostUrl} \
+						-Dsonar.token="${sonarOptions.sonarToken}"
 				"""
 			}
 		}
