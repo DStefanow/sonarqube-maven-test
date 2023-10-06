@@ -24,14 +24,14 @@ pipeline {
 			steps {
 				git branch: "${params.BRANCH}", credentialsId: 'github-test', url: "git@github.com:DStefanow/${params.REPO}.git"
 
-				sh """
-					mvn clean verify sonar:sonar \
-						-Dmaven.test.skip=true \
-						-Dsonar.projectKey="${sonarOptions.projectKey}" \
-						-Dsonar.projectName='"${sonarOptions.projectName}"' \
-						-Dsonar.host.url=${sonarHostUrl} \
-						-Dsonar.token="${sonarOptions.sonarToken}"
-				"""
+				script {
+					def sonarRunResult = sh(script: "mvn clean verify sonar:sonar \
+							-Dmaven.test.skip=true \
+							-Dsonar.projectKey=${sonarOptions.projectKey} \
+							-Dsonar.projectName='${sonarOptions.projectName}' \
+							-Dsonar.host.url=${sonarHostUrl} \
+							-Dsonar.token=${sonarOptions.sonarToken}", returnStdout: true)
+				}
 			}
 		}
 	}
