@@ -7,6 +7,8 @@ def sonarOptions = [
 	sonarToken: 'sqp_c37cef881510d1ba491cdfd69cf9c6019fbb4c3f'
 ]
 
+def sonarRunResult = ''
+
 pipeline {
 	agent any
 	parameters {
@@ -25,13 +27,15 @@ pipeline {
 				git branch: "${params.BRANCH}", credentialsId: 'github-test', url: "git@github.com:DStefanow/${params.REPO}.git"
 
 				script {
-					def sonarRunResult = sh(script: "mvn clean verify sonar:sonar \
-							-Dmaven.test.skip=true \
-							-Dsonar.projectKey=${sonarOptions.projectKey} \
-							-Dsonar.projectName='${sonarOptions.projectName}' \
-							-Dsonar.host.url=${sonarHostUrl} \
-							-Dsonar.token=${sonarOptions.sonarToken}", returnStdout: true)
+					sonarRunResult = sh(script: "mvn clean verify sonar:sonar \
+						-Dmaven.test.skip=true \
+						-Dsonar.projectKey=${sonarOptions.projectKey} \
+						-Dsonar.projectName='${sonarOptions.projectName}' \
+						-Dsonar.host.url=${sonarHostUrl} \
+						-Dsonar.token=${sonarOptions.sonarToken} | grep -A4 'ANALYSIS SUCCESSFUL'", returnStdout: true)
 				}
+
+				echo "SonarQube run rusult output: ${sonarRunResult}"
 			}
 		}
 	}
